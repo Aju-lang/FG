@@ -1,51 +1,60 @@
-// lib/firebase.ts - Firebase configuration and initialization
+'use client'
 
-import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getAnalytics, isSupported } from 'firebase/analytics'
-import { getFirestore } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
-import { getStorage } from 'firebase/storage'
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// ============================================================================
-// FIREBASE CONFIGURATION
-// ============================================================================
-
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAm-KVkBx3axR4p27z6t73fF49kATTH1I0",
-  authDomain: "fg-school-f28b2.firebaseapp.com",
-  projectId: "fg-school-f28b2",
-  storageBucket: "fg-school-f28b2.firebasestorage.app",
-  messagingSenderId: "1016391940159",
-  appId: "1:1016391940159:web:32e11c0a3df04e44d8608a",
-  measurementId: "G-JEJK06T48B"
-}
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAm-KVkBx3axR4p27z6t73fF49kATTH1I0",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "fg-school-f28b2.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "fg-school-f28b2",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "fg-school-f28b2.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "1016391940159",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:1016391940159:web:32e11c0a3df04e44d8608a",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-JEJK06T48B"
+};
 
-// ============================================================================
-// FIREBASE INITIALIZATION
-// ============================================================================
-
-// Initialize Firebase app (prevent multiple initializations)
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase services
-const db = getFirestore(app)
-const auth = getAuth(app)
-const storage = getStorage(app)
+let analytics: any = null;
+let auth: any = null;
+let db: any = null;
 
-// Initialize Analytics (only in browser and if supported)
-let analytics: any = null
-
+// Only initialize client-side services in the browser
 if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app)
-    }
-  })
+  analytics = getAnalytics(app);
+  auth = getAuth(app);
+  db = getFirestore(app);
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+export { app, auth, db, analytics };
 
-export { app, db, auth, storage, analytics }
-export default app 
+// Getter functions that ensure client-side only execution
+export const getFirebaseAuth = () => {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Auth can only be used on the client side')
+  }
+  return auth
+}
+
+export const getFirebaseDb = () => {
+  if (typeof window === 'undefined') {
+    throw new Error('Firestore can only be used on the client side')
+  }
+  return db
+}
+
+export const getFirebaseApp = () => {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase App can only be used on the client side')
+  }
+  return app
+} 

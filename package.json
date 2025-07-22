@@ -3,28 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build && next export"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.1.1",
-    "@types/bcryptjs": "^2.4.6",
-    "aceternity-ui": "^0.2.2",
+    "@types/qrcode": "^1.5.5",
     "axios": "^1.10.0",
-    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "firebase": "^11.10.0",
     "framer-motion": "^12.23.0",
-    "mongoose": "^8.16.1",
     "next": "^15.3.5",
-    "next-auth": "^4.24.11",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
-    "react-bits": "^1.0.5",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.60.0",
@@ -44,9 +40,9 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5"
   },
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "description": "FG School - Full-stack Next.js application with Firebase Auth and Firestore",
   "main": "index.js",
-  "keywords": [],
+  "keywords": ["nextjs", "firebase", "school", "education"],
   "author": "",
   "license": "ISC"
 }
