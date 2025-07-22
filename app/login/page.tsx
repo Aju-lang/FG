@@ -13,9 +13,9 @@ import {
   ShieldCheckIcon
 } from '@heroicons/react/24/outline'
 import { toast } from 'react-toastify'
-import { auth, db } from '@/lib/firebase'
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth } from '@/lib/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import { signInWithEmail, signInWithGoogle, signUpWithEmail, getUserProfile, getRedirectPath } from '@/lib/auth'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -41,48 +42,17 @@ export default function LoginPage() {
 
   const checkUserRoleAndRedirect = async (uid: string) => {
     try {
-      if (db) {
-        const userDoc = await getDoc(doc(db, 'users', uid))
-        if (userDoc.exists()) {
-          const userData = userDoc.data()
-          if (userData.role === 'student') {
-            router.push('/school-lab')
-          } else {
-            router.push('/dashboard')
-          }
-        }
+      const userProfile = await getUserProfile(uid)
+      if (userProfile) {
+        const redirectPath = getRedirectPath(userProfile.role)
+        router.push(redirectPath)
       }
     } catch (error) {
       console.error('Error checking user role:', error)
     }
   }
 
-  const createUserProfile = async (user: any, role: string) => {
-    try {
-      if (db) {
-        const userProfile = {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName || user.email?.split('@')[0] || 'User',
-          role: role,
-          createdAt: new Date(),
-          lastLogin: new Date()
-        }
-
-        await setDoc(doc(db, 'users', user.uid), userProfile, { merge: true })
-        
-        // Save to localStorage for app state
-        localStorage.setItem('userProfile', JSON.stringify(userProfile))
-        
-        return userProfile
-      }
-    } catch (error) {
-      console.error('Error creating user profile:', error)
-      throw error
-    }
-  }
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!email || !password) {
@@ -98,39 +68,25 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const user = userCredential.user
-
-      await createUserProfile(user, userType)
+      let result
+      if (isSignUp) {
+        result = await signUpWithEmail(email, password, userType)
+      } else {
+        result = await signInWithEmail(email, password, userType)
+      }
 
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email)
         localStorage.setItem('rememberedUserType', userType)
       }
 
-      toast.success(`Welcome back!`)
-
       // Redirect based on role
-      if (userType === 'student') {
-        router.push('/school-lab')
-      } else {
-        router.push('/dashboard')
-      }
+      const redirectPath = getRedirectPath(result.profile.role)
+      router.push(redirectPath)
 
     } catch (error: any) {
-      console.error('Login error:', error)
-      
-      if (error.code === 'auth/user-not-found') {
-        toast.error('No account found with this email')
-      } else if (error.code === 'auth/wrong-password') {
-        toast.error('Incorrect password')
-      } else if (error.code === 'auth/invalid-email') {
-        toast.error('Invalid email address')
-      } else if (error.code === 'auth/too-many-requests') {
-        toast.error('Too many failed attempts. Please try again later.')
-      } else {
-        toast.error('Login failed. Please try again.')
-      }
+      console.error('Auth error:', error)
+      // Error handling is done in the auth functions
     } finally {
       setIsLoading(false)
     }
@@ -145,31 +101,15 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      const user = result.user
-
-      await createUserProfile(user, userType)
-
-      toast.success(`Welcome, ${user.displayName}!`)
-
+      const result = await signInWithGoogle(userType)
+      
       // Redirect based on role
-      if (userType === 'student') {
-        router.push('/school-lab')
-      } else {
-        router.push('/dashboard')
-      }
+      const redirectPath = getRedirectPath(result.profile.role)
+      router.push(redirectPath)
 
     } catch (error: any) {
       console.error('Google login error:', error)
-      
-      if (error.code === 'auth/popup-closed-by-user') {
-        toast.error('Login cancelled')
-      } else if (error.code === 'auth/popup-blocked') {
-        toast.error('Popup blocked. Please allow popups and try again.')
-      } else {
-        toast.error('Google login failed. Please try again.')
-      }
+      // Error handling is done in the auth function
     } finally {
       setIsLoading(false)
     }
@@ -250,7 +190,7 @@ export default function LoginPage() {
             </motion.div>
 
             {/* Login Form */}
-            <form onSubmit={handleEmailLogin} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-blue-100 mb-2">
@@ -326,10 +266,10 @@ export default function LoginPage() {
                 {isLoading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Signing in...
+                    {isSignUp ? 'Creating account...' : 'Signing in...'}
                   </div>
                 ) : (
-                  `Sign in as ${userType === 'student' ? 'Student' : 'Controller'}`
+                  `${isSignUp ? 'Create Account' : 'Sign In'} as ${userType === 'student' ? 'Student' : 'Controller'}`
                 )}
               </motion.button>
             </form>
@@ -352,18 +292,26 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Test Instructions */}
-            <div className="mt-6 p-4 bg-white/5 rounded-lg">
-              <p className="text-blue-100 text-xs mb-2">Demo Instructions:</p>
-              <p className="text-blue-200 text-xs">Use any valid email/password combination to test the authentication system.</p>
-              <p className="text-blue-200 text-xs">Or click "Continue with Google" for OAuth login.</p>
+            {/* Sign up toggle */}
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-blue-300 hover:text-white underline text-sm"
+              >
+                {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              </button>
             </div>
 
-            {/* Navigation */}
-            <div className="mt-6 text-center">
-              <a href="/" className="text-blue-300 hover:text-white underline text-sm">
-                Back to Home
-              </a>
+            {/* Test Instructions */}
+            <div className="mt-4 p-4 bg-white/5 rounded-lg">
+              <p className="text-blue-100 text-xs mb-2">Demo Instructions:</p>
+              <p className="text-blue-200 text-xs">
+                {isSignUp 
+                  ? 'Create a new account with any valid email and password (6+ characters).'
+                  : 'Sign in with your existing account or create a new one.'}
+              </p>
+              <p className="text-blue-200 text-xs">Or use Google authentication for quick access.</p>
             </div>
           </div>
         </motion.div>
