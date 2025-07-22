@@ -97,8 +97,8 @@ export default function Dashboard() {
                 <span className="text-sm">
                   {user?.name || user?.email || 'User'} ({userRole})
                 </span>
-              </div>
-              
+            </div>
+
               <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
                 <BellIcon className="h-6 w-6" />
               </button>
@@ -107,13 +107,13 @@ export default function Dashboard() {
                 <CogIcon className="h-6 w-6" />
               </button>
               
-              <button
+            <button
                 onClick={handleSignOut}
                 className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 transition-colors"
-              >
+            >
                 <ArrowRightOnRectangleIcon className="h-5 w-5" />
                 <span className="text-sm">Sign Out</span>
-              </button>
+            </button>
             </div>
           </div>
         </div>
@@ -123,9 +123,9 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -137,14 +137,14 @@ export default function Dashboard() {
               : 'Manage your school efficiently with our comprehensive tools.'}
           </p>
         </motion.div>
-
+            
         {/* Stats Grid */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
-        >
+            >
           {stats.map((stat, index) => (
             <div key={stat.label} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <div className="text-2xl font-bold text-blue-600 mb-1">{stat.number}</div>
@@ -154,10 +154,10 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-8"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
@@ -172,17 +172,17 @@ export default function Dashboard() {
               >
                 <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <action.icon className="h-6 w-6 text-white" />
-                </div>
+          </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{action.title}</h3>
                 <p className="text-gray-600 text-sm">{action.description}</p>
               </motion.a>
             ))}
           </div>
-        </motion.div>
+          </motion.div>
 
         {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           className="grid md:grid-cols-2 gap-6"
@@ -197,13 +197,13 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-900">New certificate awarded to Sarah Johnson</p>
                   <p className="text-xs text-gray-500">2 hours ago</p>
                 </div>
-              </div>
+          </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-900">Class enrollment updated for Mathematics</p>
                   <p className="text-xs text-gray-500">4 hours ago</p>
-                </div>
+        </div>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -213,7 +213,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </div>
+                  </div>
 
           {/* Quick Stats */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -223,7 +223,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600">Class Completion</span>
                   <span className="text-sm font-semibold text-gray-900">85%</span>
-                </div>
+                  </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-blue-600 h-2 rounded-full" style={{width: '85%'}}></div>
                 </div>
@@ -232,7 +232,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600">Student Engagement</span>
                   <span className="text-sm font-semibold text-gray-900">92%</span>
-                </div>
+                  </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-green-600 h-2 rounded-full" style={{width: '92%'}}></div>
                 </div>
@@ -241,7 +241,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600">Certificates Issued</span>
                   <span className="text-sm font-semibold text-gray-900">78%</span>
-                </div>
+                  </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-purple-600 h-2 rounded-full" style={{width: '78%'}}></div>
                 </div>
@@ -249,7 +249,7 @@ export default function Dashboard() {
             </div>
           </div>
         </motion.div>
-      </div>
+        </div>
     </div>
   )
 }

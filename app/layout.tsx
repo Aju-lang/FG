@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`dark ${inter.variable} ${roboto.variable}`}>
       <body>
         <AuthWrapper>
-          {children}
+        {children}
         </AuthWrapper>
         <ToastContainer
           position="top-right"

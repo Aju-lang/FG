@@ -149,12 +149,20 @@ export const leaderboardQuerySchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string()
+    .min(1, 'Email is required')
     .email('Please enter a valid email address')
     .toLowerCase()
     .trim(),
   password: z.string()
     .min(6, 'Password must be at least 6 characters')
+    .max(100, 'Password cannot exceed 100 characters'),
+  role: z.enum(['student', 'controller'], {
+    required_error: 'Please select a user type'
+  }).default('student'),
+  rememberMe: z.boolean().default(false)
 })
+
+export type LoginFormData = z.infer<typeof loginSchema>
 
 export const registerSchema = z.object({
   name: z.string()
