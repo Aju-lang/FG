@@ -101,7 +101,10 @@ export const signInWithEmail = async (email: string, password: string, role: 'st
         errorMessage = 'This account has been disabled'
         break
       case 'auth/invalid-credential':
-        errorMessage = 'Invalid email or password'
+        errorMessage = 'Invalid credentials. Try: student@test.com / password123 or create an account in Firebase Console'
+        break
+      default:
+        errorMessage = `Login failed: ${error.message || 'Please try again.'}`
         break
     }
     
@@ -284,4 +287,36 @@ export const getCurrentUser = (): UserProfile | null => {
 // Utility function to check if user is authenticated
 export const isAuthenticated = (): boolean => {
   return !!getCurrentUser() && !!auth?.currentUser
+}
+
+// Quick utility to create demo users for testing
+export const createDemoUsers = async () => {
+  if (!auth) {
+    throw new Error('Auth not initialized')
+  }
+
+  const demoUsers = [
+    { email: 'student@test.com', password: 'password123', role: 'student' as const },
+    { email: 'admin@test.com', password: 'password123', role: 'controller' as const }
+  ]
+
+  const results = []
+  
+  for (const user of demoUsers) {
+    try {
+      const result = await signUpWithEmail(user.email, user.password, user.role)
+      results.push({ success: true, email: user.email, role: user.role })
+      console.log(`✅ Created demo user: ${user.email} (${user.role})`)
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        results.push({ success: true, email: user.email, role: user.role, message: 'Already exists' })
+        console.log(`ℹ️ Demo user already exists: ${user.email}`)
+      } else {
+        results.push({ success: false, email: user.email, error: error.message })
+        console.error(`❌ Failed to create demo user: ${user.email}`, error)
+      }
+    }
+  }
+  
+  return results
 } 

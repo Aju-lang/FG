@@ -158,8 +158,8 @@ export const loginSchema = z.object({
     .max(100, 'Password cannot exceed 100 characters'),
   role: z.enum(['student', 'controller'], {
     required_error: 'Please select a user type'
-  }).default('student'),
-  rememberMe: z.boolean().default(false)
+  }),
+  rememberMe: z.boolean()
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>

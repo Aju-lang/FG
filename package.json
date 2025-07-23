@@ -42,7 +42,12 @@
   },
   "description": "FG School - Full-stack Next.js application with Firebase Auth and Firestore",
   "main": "index.js",
-  "keywords": ["nextjs", "firebase", "school", "education"],
+  "keywords": [
+    "nextjs",
+    "firebase",
+    "school",
+    "education"
+  ],
   "author": "",
   "license": "ISC"
 }
