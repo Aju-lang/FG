@@ -1,116 +1,146 @@
 'use client'
 
 import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  GoogleAuthProvider, 
-  signInWithPopup,
-  onAuthStateChanged,
-  User
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  User,
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { toast } from 'react-toastify'
+import { auth, db } from './firebase'
 
 export interface UserProfile {
   uid: string
   email: string
   name: string
   role: 'student' | 'controller'
-  createdAt: Date
-  lastLogin: Date
+  createdAt: string
+  lastLogin: string
 }
 
-export const createUserProfile = async (user: User, role: 'student' | 'controller'): Promise<UserProfile> => {
-  if (!db) {
-    throw new Error('Database not initialized')
-  }
-
+// Optimized user profile creation - faster with minimal data
+export const createUserProfile = async (user: User, role: 'student' | 'controller', additionalData?: any) => {
   const userProfile: UserProfile = {
     uid: user.uid,
     email: user.email || '',
-    name: user.displayName || user.email?.split('@')[0] || 'User',
-    role: role,
-    createdAt: new Date(),
-    lastLogin: new Date()
-  }
-
-  await setDoc(doc(db, 'users', user.uid), userProfile, { merge: true })
-  
-  // Store in both localStorage keys for compatibility
-  localStorage.setItem('userProfile', JSON.stringify(userProfile))
-  localStorage.setItem('currentUser', JSON.stringify(userProfile))
-  
-  return userProfile
-}
-
-export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
-  if (!db) {
-    throw new Error('Database not initialized')
+    name: user.displayName || user.email?.split('@')[0] || '',
+    role,
+    createdAt: new Date().toISOString(),
+    lastLogin: new Date().toISOString(),
+    ...additionalData
   }
 
   try {
+    // Quick database write
+    await setDoc(doc(db, 'users', user.uid), userProfile)
+    
+    // Fast local storage update
+    localStorage.setItem('userProfile', JSON.stringify(userProfile))
+    localStorage.setItem('currentUser', JSON.stringify({
+      uid: user.uid,
+      email: user.email,
+      displayName: userProfile.name
+    }))
+
+    return userProfile
+  } catch (error) {
+    console.error('Error creating user profile:', error)
+    throw error
+  }
+}
+
+// Optimized user profile retrieval - faster caching
+export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
+  try {
+    // Check local cache first for speed
+    const cachedProfile = localStorage.getItem('userProfile')
+    if (cachedProfile) {
+      const profile = JSON.parse(cachedProfile)
+      if (profile.uid === uid) {
+        return profile
+      }
+    }
+
+    // Quick database read if not cached
     const userDoc = await getDoc(doc(db, 'users', uid))
     if (userDoc.exists()) {
-      return userDoc.data() as UserProfile
+      const profile = userDoc.data() as UserProfile
+      // Cache for next time
+      localStorage.setItem('userProfile', JSON.stringify(profile))
+      return profile
     }
+    
     return null
   } catch (error) {
-    console.error('Error fetching user profile:', error)
+    console.error('Error getting user profile:', error)
     return null
   }
 }
 
+// Faster email sign-in with optimized error handling
 export const signInWithEmail = async (email: string, password: string, role: 'student' | 'controller') => {
-  if (!auth) {
-    throw new Error('Auth not initialized')
-  }
-
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password)
-    const userProfile = await createUserProfile(userCredential.user, role)
+    // Quick authentication
+    const result = await signInWithEmailAndPassword(auth, email, password)
     
-    toast.success(`Welcome back, ${userProfile.name}! 👋`, {
+    // Fast profile retrieval
+    let userProfile = await getUserProfile(result.user.uid)
+    
+    if (!userProfile) {
+      // Quick profile creation if not exists
+      userProfile = await createUserProfile(result.user, role)
+    } else {
+      // Quick role verification
+      if (userProfile.role !== role) {
+        toast.error(`Please select the correct role. You are registered as a ${userProfile.role}.`)
+        throw new Error('Role mismatch')
+      }
+      
+      // Quick last login update
+      userProfile.lastLogin = new Date().toISOString()
+      localStorage.setItem('userProfile', JSON.stringify(userProfile))
+    }
+
+    // Quick success notification
+    toast.success(`Welcome back, ${userProfile.name}!`, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
     })
     
-    return { user: userCredential.user, profile: userProfile }
+    return { user: result.user, profile: userProfile }
   } catch (error: any) {
-    let errorMessage = 'Login failed. Please try again.'
+    // Quick error handling
+    let errorMessage = 'Login failed. Please check your credentials.'
     
     switch (error.code) {
       case 'auth/user-not-found':
-        errorMessage = 'No account found with this email address'
+        errorMessage = 'No account found with this email. Please check your email or create an account.'
         break
       case 'auth/wrong-password':
         errorMessage = 'Incorrect password. Please try again.'
         break
       case 'auth/invalid-email':
-        errorMessage = 'Please enter a valid email address'
+        errorMessage = 'Invalid email address format.'
         break
       case 'auth/too-many-requests':
         errorMessage = 'Too many failed attempts. Please try again later.'
         break
-      case 'auth/user-disabled':
-        errorMessage = 'This account has been disabled'
-        break
       case 'auth/invalid-credential':
-        errorMessage = 'Invalid credentials. Try: student@test.com / password123 or create an account in Firebase Console'
-        break
-      default:
-        errorMessage = `Login failed: ${error.message || 'Please try again.'}`
+        errorMessage = 'Invalid credentials. Please check your email and password.'
         break
     }
-    
+
     toast.error(errorMessage, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -121,22 +151,21 @@ export const signInWithEmail = async (email: string, password: string, role: 'st
   }
 }
 
+// Optimized Google sign-in
 export const signInWithGoogle = async (role: 'student' | 'controller') => {
-  if (!auth) {
-    throw new Error('Auth not initialized')
-  }
-
   try {
     const provider = new GoogleAuthProvider()
-    provider.addScope('email')
-    provider.addScope('profile')
-    
     const result = await signInWithPopup(auth, provider)
-    const userProfile = await createUserProfile(result.user, role)
     
-    toast.success(`Welcome to FG School, ${userProfile.name}! 🎉`, {
+    let userProfile = await getUserProfile(result.user.uid)
+    
+    if (!userProfile) {
+      userProfile = await createUserProfile(result.user, role)
+    }
+
+    toast.success(`Welcome, ${userProfile.name}!`, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -158,88 +187,11 @@ export const signInWithGoogle = async (role: 'student' | 'controller') => {
         errorMessage = 'Sign-in request was cancelled'
         break
       case 'auth/account-exists-with-different-credential':
-        errorMessage = 'An account already exists with the same email address'
+        errorMessage = 'An account already exists with the same email address but different sign-in credentials.'
         break
     }
-    
+
     toast.error(errorMessage, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    })
-    
-    throw error
-  }
-}
-
-export const signUpWithEmail = async (email: string, password: string, role: 'student' | 'controller') => {
-  if (!auth) {
-    throw new Error('Auth not initialized')
-  }
-
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-    const userProfile = await createUserProfile(userCredential.user, role)
-    
-    toast.success(`Welcome to FG School, ${userProfile.name}! 🎓`, {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    })
-    
-    return { user: userCredential.user, profile: userProfile }
-  } catch (error: any) {
-    let errorMessage = 'Account creation failed. Please try again.'
-    
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        errorMessage = 'An account with this email already exists'
-        break
-      case 'auth/weak-password':
-        errorMessage = 'Password should be at least 6 characters'
-        break
-      case 'auth/invalid-email':
-        errorMessage = 'Please enter a valid email address'
-        break
-      case 'auth/operation-not-allowed':
-        errorMessage = 'Email/password accounts are not enabled'
-        break
-    }
-    
-    toast.error(errorMessage, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    })
-    
-    throw error
-  }
-}
-
-export const signOutUser = async () => {
-  if (!auth) {
-    throw new Error('Auth not initialized')
-  }
-
-  try {
-    await signOut(auth)
-    
-    // Clear all localStorage items
-    localStorage.removeItem('userProfile')
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('rememberedEmail')
-    localStorage.removeItem('rememberedUserType')
-    
-    toast.success('Successfully signed out. See you soon! 👋', {
       position: "top-right",
       autoClose: 3000,
       hideProgressBar: false,
@@ -247,76 +199,116 @@ export const signOutUser = async () => {
       pauseOnHover: true,
       draggable: true,
     })
-  } catch (error) {
-    console.error('Sign out error:', error)
-    toast.error('Error signing out. Please try again.', {
+    
+    throw error
+  }
+}
+
+// Fast user registration
+export const registerWithEmail = async (email: string, password: string, name: string, role: 'student' | 'controller') => {
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email, password)
+    
+    // Quick profile update
+    await updateProfile(result.user, { displayName: name })
+    
+    // Quick profile creation
+    const userProfile = await createUserProfile(result.user, role, { name })
+
+    toast.success(`Account created successfully! Welcome, ${name}!`, {
       position: "top-right",
-      autoClose: 4000,
+      autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
     })
+    
+    return { user: result.user, profile: userProfile }
+  } catch (error: any) {
+    let errorMessage = 'Registration failed. Please try again.'
+    
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMessage = 'An account with this email already exists.'
+        break
+      case 'auth/invalid-email':
+        errorMessage = 'Invalid email address format.'
+        break
+      case 'auth/weak-password':
+        errorMessage = 'Password should be at least 6 characters long.'
+        break
+    }
+
+    toast.error(errorMessage, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    })
+    
     throw error
   }
 }
 
+// Fast role-based redirection
 export const getRedirectPath = (role: 'student' | 'controller'): string => {
-  // Updated redirect paths as requested
+  // Role-based redirection for the new routing system
   switch (role) {
     case 'student':
-      return '/school-lab'  // Updated from school-lab.html to Next.js route
+      return '/school-lab'        // Students go to School Lab
     case 'controller':
-      return '/dashboard'   // Updated from dashboard.html to Next.js route
+      return '/control-dashboard' // Admins go to Control Dashboard
     default:
-      return '/'
+      return '/login'             // Fallback to login
   }
 }
 
-// Utility function to get current user from localStorage
-export const getCurrentUser = (): UserProfile | null => {
-  try {
-    const stored = localStorage.getItem('currentUser') || localStorage.getItem('userProfile')
-    return stored ? JSON.parse(stored) : null
-  } catch (error) {
-    console.error('Error getting current user:', error)
-    return null
-  }
-}
-
-// Utility function to check if user is authenticated
-export const isAuthenticated = (): boolean => {
-  return !!getCurrentUser() && !!auth?.currentUser
-}
-
-// Quick utility to create demo users for testing
+// Quick demo user creation for testing
 export const createDemoUsers = async () => {
-  if (!auth) {
-    throw new Error('Auth not initialized')
-  }
+  try {
+    const demoUsers = [
+      { email: 'student@test.com', password: 'password123', role: 'student' as const },
+      { email: 'admin@test.com', password: 'password123', role: 'controller' as const }
+    ]
 
-  const demoUsers = [
-    { email: 'student@test.com', password: 'password123', role: 'student' as const },
-    { email: 'admin@test.com', password: 'password123', role: 'controller' as const }
-  ]
-
-  const results = []
-  
-  for (const user of demoUsers) {
-    try {
-      const result = await signUpWithEmail(user.email, user.password, user.role)
-      results.push({ success: true, email: user.email, role: user.role })
-      console.log(`✅ Created demo user: ${user.email} (${user.role})`)
-    } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        results.push({ success: true, email: user.email, role: user.role, message: 'Already exists' })
-        console.log(`ℹ️ Demo user already exists: ${user.email}`)
-      } else {
-        results.push({ success: false, email: user.email, error: error.message })
-        console.error(`❌ Failed to create demo user: ${user.email}`, error)
+    for (const demo of demoUsers) {
+      try {
+        await registerWithEmail(demo.email, demo.password, demo.email.split('@')[0], demo.role)
+      } catch (error: any) {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log(`Demo user ${demo.email} already exists`)
+        } else {
+          throw error
+        }
       }
     }
+
+    toast.success('Demo accounts are ready!', {
+      position: "top-right",
+      autoClose: 2000,
+    })
+  } catch (error) {
+    console.error('Error creating demo users:', error)
+    toast.error('Failed to create demo accounts')
   }
-  
-  return results
+}
+
+// Fast sign out
+export const signOutUser = async () => {
+  try {
+    await signOut(auth)
+    
+    // Quick cleanup
+    localStorage.removeItem('userProfile')
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('rememberedEmail')
+    localStorage.removeItem('rememberedUserType')
+    
+  } catch (error) {
+    console.error('Error signing out:', error)
+    throw error
+  }
 } 
