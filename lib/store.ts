@@ -7,8 +7,8 @@ interface User {
   email: string
   name: string
   role: 'student' | 'controller'
-  createdAt?: Date
-  lastLogin?: Date
+  createdAt?: string
+  lastLogin?: string
 }
 
 interface AuthState {
