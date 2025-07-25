@@ -102,34 +102,41 @@ export default function EnhancedSchoolLabPage() {
   const [selectedStaffMember, setSelectedStaffMember] = useState<StaffMember | null>(null)
   const [achievementSlideIndex, setAchievementSlideIndex] = useState(0)
 
-  // Instant authentication check
+  // Combined authentication check and data loading
   useEffect(() => {
     if (!isAuthenticated || !user) {
       router.replace('/login')
       return
     }
-  }, [isAuthenticated, user, router])
-
-  // Load data on component mount
-  useEffect(() => {
+    
+    // Start loading data immediately after auth check
     if (user?.uid) {
       loadEnhancedSchoolLabData()
     }
-  }, [user])
+  }, [isAuthenticated, user, router])
 
   const loadEnhancedSchoolLabData = async () => {
     if (!user?.uid) return
     
     try {
+      // Show loading only briefly
       setLoading(true)
       
-      // Initialize enhanced demo data first
-      await initializeEnhancedDemoData()
+      // Initialize enhanced demo data first (without await to not block UI)
+      initializeEnhancedDemoData().catch(console.error)
       
-      // Load all data in parallel
+      // Load critical data first (bonus points and leaderboard)
+      const [bonusData, leaderboardData] = await Promise.all([
+        getUserBonusPoints(user.uid),
+        getLeaderboardByCategory('Overall', 3)
+      ])
+      
+      setBonusPoints(bonusData)
+      setLeaderboard(leaderboardData)
+      setLoading(false) // Show UI with critical data first
+      
+      // Load remaining data in background
       const [
-        bonusData, 
-        leaderboardData, 
         scheduleData, 
         achievementsData, 
         teamsData,
@@ -138,8 +145,6 @@ export default function EnhancedSchoolLabPage() {
         eventsData,
         staffData
       ] = await Promise.all([
-        getUserBonusPoints(user.uid),
-        getLeaderboardByCategory('Overall', 3),
         getClassSchedule(),
         getSchoolAchievements(),
         getEnhancedTeamPoints(),
@@ -149,8 +154,7 @@ export default function EnhancedSchoolLabPage() {
         getStaffMembers()
       ])
       
-      setBonusPoints(bonusData)
-      setLeaderboard(leaderboardData)
+      // Update UI with remaining data
       setClassSchedule(scheduleData)
       setAchievements(achievementsData)
       setTeamPoints(teamsData)
@@ -161,7 +165,6 @@ export default function EnhancedSchoolLabPage() {
     } catch (error) {
       console.error('Error loading enhanced school lab data:', error)
       toast.error('Error loading data')
-    } finally {
       setLoading(false)
     }
   }

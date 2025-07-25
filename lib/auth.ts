@@ -2,11 +2,11 @@
 
 import { 
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
+  signInWithEmailAndPassword, 
+  signOut, 
   User,
   updateProfile,
-  GoogleAuthProvider,
+  GoogleAuthProvider, 
   signInWithPopup
 } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
@@ -39,14 +39,14 @@ export const createUserProfile = async (user: User, role: 'student' | 'controlle
     await setDoc(doc(db, 'users', user.uid), userProfile)
     
     // Fast local storage update
-    localStorage.setItem('userProfile', JSON.stringify(userProfile))
+  localStorage.setItem('userProfile', JSON.stringify(userProfile))
     localStorage.setItem('currentUser', JSON.stringify({
       uid: user.uid,
       email: user.email,
       displayName: userProfile.name
     }))
-
-    return userProfile
+  
+  return userProfile
   } catch (error) {
     console.error('Error creating user profile:', error)
     throw error
@@ -137,7 +137,7 @@ export const signInWithEmail = async (email: string, password: string, role: 'st
         errorMessage = 'Invalid credentials. Please check your email and password.'
         break
     }
-
+    
     toast.error(errorMessage, {
       position: "top-right",
       autoClose: 3000,
@@ -162,7 +162,7 @@ export const signInWithGoogle = async (role: 'student' | 'controller') => {
     if (!userProfile) {
       userProfile = await createUserProfile(result.user, role)
     }
-
+    
     toast.success(`Welcome, ${userProfile.name}!`, {
       position: "top-right",
       autoClose: 2000,
@@ -190,7 +190,7 @@ export const signInWithGoogle = async (role: 'student' | 'controller') => {
         errorMessage = 'An account already exists with the same email address but different sign-in credentials.'
         break
     }
-
+    
     toast.error(errorMessage, {
       position: "top-right",
       autoClose: 3000,
@@ -214,7 +214,7 @@ export const registerWithEmail = async (email: string, password: string, name: s
     
     // Quick profile creation
     const userProfile = await createUserProfile(result.user, role, { name })
-
+    
     toast.success(`Account created successfully! Welcome, ${name}!`, {
       position: "top-right",
       autoClose: 3000,
@@ -239,7 +239,7 @@ export const registerWithEmail = async (email: string, password: string, name: s
         errorMessage = 'Password should be at least 6 characters long.'
         break
     }
-
+    
     toast.error(errorMessage, {
       position: "top-right",
       autoClose: 3000,

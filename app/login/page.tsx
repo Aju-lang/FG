@@ -44,18 +44,18 @@ export default function LoginPage() {
     if (!auth) return
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
+        if (user) {
+    try {
           const userProfile = await getUserProfile(user.uid)
-          if (userProfile) {
+      if (userProfile) {
             setUser(userProfile)
-            const redirectPath = getRedirectPath(userProfile.role)
+        const redirectPath = getRedirectPath(userProfile.role)
             router.replace(redirectPath)
-          }
-        } catch (error) {
-          console.error('Error checking user role:', error)
-        }
       }
+    } catch (error) {
+      console.error('Error checking user role:', error)
+    }
+  }
     })
 
     return () => unsubscribe()
@@ -87,49 +87,49 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
             <p className="text-blue-200">Sign in to your FG School account</p>
-          </div>
+      </div>
 
           {/* Role Toggle */}
           <div className="mb-6">
             <div className="flex bg-blue-800 rounded-xl p-1">
-              <button
-                type="button"
+                <button
+                  type="button"
                 onClick={() => setValue('role', 'student')}
                 className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-300 ${
                   watchedRole === 'student'
                     ? 'bg-blue-600 text-white'
                     : 'text-blue-200 hover:text-white hover:bg-blue-700'
-                }`}
-              >
-                Student
-              </button>
-              <button
-                type="button"
+                  }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
                 onClick={() => setValue('role', 'controller')}
                 className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-300 ${
                   watchedRole === 'controller'
                     ? 'bg-blue-600 text-white'
                     : 'text-blue-200 hover:text-white hover:bg-blue-700'
-                }`}
-              >
+                  }`}
+                >
                 Admin
-              </button>
-            </div>
+                </button>
+              </div>
           </div>
 
-          {/* Login Form */}
+            {/* Login Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             
-            {/* Email Input */}
-            <div>
+              {/* Email Input */}
+              <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-                Email Address
-              </label>
-              <input
+                  Email Address
+                </label>
+                  <input
                 {...register('email')}
                 id="email"
-                type="email"
-                placeholder="Enter your email"
+                    type="email"
+                    placeholder="Enter your email"
                 className={`w-full px-4 py-3 bg-blue-800 border rounded-xl text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 ${
                   errors.email 
                     ? 'border-red-400 focus:ring-red-400 focus:border-red-400' 
@@ -139,56 +139,56 @@ export default function LoginPage() {
               {errors.email && (
                 <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
               )}
-            </div>
+              </div>
 
-            {/* Password Input */}
-            <div>
+              {/* Password Input */}
+              <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
+                  Password
+                </label>
+                <div className="relative">
+                  <input
                   {...register('password')}
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
                   className={`w-full px-4 py-3 pr-20 bg-blue-800 border rounded-xl text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 ${
                     errors.password 
                       ? 'border-red-400 focus:ring-red-400 focus:border-red-400' 
                       : 'border-blue-600 hover:border-blue-500'
                   }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-300 hover:text-white transition-all duration-300"
-                >
+                  >
                   <span className="text-sm font-medium">
                     {showPassword ? 'Hide' : 'Show'}
                   </span>
-                </button>
-              </div>
+                  </button>
+                </div>
               {errors.password && (
                 <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
               )}
-            </div>
+              </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center">
-              <input
+              {/* Remember Me */}
+              <div className="flex items-center">
+                <input
                 {...register('rememberMe')}
                 id="remember"
-                type="checkbox"
+                  type="checkbox"
                 className="w-4 h-4 text-blue-500 bg-blue-800 border-blue-600 rounded focus:ring-blue-400 focus:ring-2"
-              />
+                />
               <label htmlFor="remember" className="ml-3 text-sm text-blue-200 cursor-pointer">
                 Remember me for 30 days
-              </label>
-            </div>
+                </label>
+              </div>
 
             {/* Submit Button - No loading states */}
             <button
-              type="submit"
+                type="submit"
               disabled={isSubmitting}
               className="w-full py-3 px-6 rounded-xl font-semibold text-white bg-blue-700 hover:bg-blue-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             >
@@ -207,7 +207,7 @@ export default function LoginPage() {
                 <div className="text-right">
                   <div className="text-white font-mono">student@test.com</div>
                   <div className="text-blue-300 font-mono">password123</div>
-                </div>
+                  </div>
               </div>
               <div className="flex justify-between p-3 bg-blue-700 rounded-lg">
                 <span className="text-blue-200 font-medium">Admin:</span>
@@ -216,8 +216,8 @@ export default function LoginPage() {
                   <div className="text-blue-300 font-mono">password123</div>
                 </div>
               </div>
+              </div>
             </div>
-          </div>
 
           {/* Footer */}
           <div className="mt-6 text-center">
