@@ -643,7 +643,8 @@ function getDefaultAchievements(): Achievement[] {
       description: 'Outstanding innovation in renewable energy solutions that impressed all judges.',
       image: '/api/placeholder/300/200',
       date: '2024-01-15',
-      category: 'Academic'
+      category: 'Academic',
+      type: 'Academic'
     },
     {
       id: '2',
@@ -651,7 +652,8 @@ function getDefaultAchievements(): Achievement[] {
       description: 'Spectacular performance in annual school play received standing ovation.',
       image: '/api/placeholder/300/200',
       date: '2024-01-10',
-      category: 'Arts'
+      category: 'Arts',
+      type: 'Kalolsavam'
     },
     {
       id: '3',
@@ -659,7 +661,8 @@ function getDefaultAchievements(): Achievement[] {
       description: 'Incredible teamwork led to victory in inter-school football tournament.',
       image: '/api/placeholder/300/200',
       date: '2024-01-05',
-      category: 'Sports'
+      category: 'Sports',
+      type: 'Sports'
     },
     {
       id: '4',
@@ -667,7 +670,8 @@ function getDefaultAchievements(): Achievement[] {
       description: 'Student-led initiative planted 500 trees and reduced school carbon footprint.',
       image: '/api/placeholder/300/200',
       date: '2023-12-20',
-      category: 'Environment'
+      category: 'Environment',
+      type: 'Academic'
     }
   ]
 }
@@ -696,19 +700,28 @@ function getDefaultTeams(): TeamPoints[] {
       teamName: 'Alpha',
       points: 750,
       maxPoints: 1000,
-      color: 'red-500'
+      color: 'red-500',
+      arts: 250,
+      sports: 300,
+      kalolsavam: 200
     },
     {
       teamName: 'Beta',
       points: 680,
       maxPoints: 1000,
-      color: 'green-500'
+      color: 'green-500',
+      arts: 200,
+      sports: 280,
+      kalolsavam: 200
     },
     {
       teamName: 'Gamma',
       points: 820,
       maxPoints: 1000,
-      color: 'yellow-500'
+      color: 'yellow-500',
+      arts: 300,
+      sports: 250,
+      kalolsavam: 270
     }
   ]
 }

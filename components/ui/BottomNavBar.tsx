@@ -22,35 +22,35 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     id: 'mentorship',
-    label: 'Mentor',
+    label: 'Mentorship',
     icon: MdWorkspaces,
     path: '/mentorship',
     color: 'text-purple-400'
   },
   {
     id: 'certificates',
-    label: 'Certs',
+    label: 'Certificates',
     icon: MdBadge,
     path: '/certificates',
     color: 'text-green-400'
   },
   {
     id: 'school-lab',
-    label: 'Home',
+    label: 'School Lab',
     icon: MdSchool,
     path: '/school-lab',
     color: 'text-blue-400'
   },
   {
     id: 'leadership',
-    label: 'Leaders',
+    label: 'Leadership',
     icon: MdEmojiEvents,
     path: '/leadership',
     color: 'text-orange-400'
   },
   {
     id: 'about-me',
-    label: 'Profile',
+    label: 'About Me',
     icon: MdPerson,
     path: '/about-me',
     color: 'text-pink-400'
@@ -77,11 +77,11 @@ export default function BottomNavBar() {
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
+      className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4"
     >
-      {/* Compact Navigation Container */}
-      <div className="bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl px-2 py-2">
-        <div className="flex items-center gap-1">
+      {/* Phone-width Navigation Container */}
+      <div className="bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl px-4 py-3 max-w-sm mx-auto">
+        <div className="flex items-center justify-between gap-2">
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.path)
@@ -90,7 +90,7 @@ export default function BottomNavBar() {
               <motion.button
                 key={item.id}
                 onClick={() => handleNavigation(item.path)}
-                className="relative flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-300"
+                className="relative flex flex-col items-center justify-center px-2 py-2 rounded-xl transition-all duration-300 min-w-0 flex-1"
                 whileTap={{ scale: 0.95 }}
                 whileHover={{ scale: 1.05 }}
               >
@@ -130,7 +130,7 @@ export default function BottomNavBar() {
                     color: active ? 'rgb(255, 255, 255)' : 'rgb(148, 163, 184)'
                   }}
                   transition={{ duration: 0.2 }}
-                  className="text-xs leading-none relative z-10"
+                  className="text-xs leading-tight relative z-10 text-center truncate max-w-full"
                 >
                   {item.label}
                 </motion.span>

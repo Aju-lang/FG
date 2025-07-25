@@ -18,7 +18,6 @@ import {
   CalendarIcon,
   StarIcon,
   UserGroupIcon,
-  CertificateIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircleIcon,
@@ -108,7 +107,7 @@ export default function EnhancedSchoolLabPage() {
       router.replace('/login')
       return
     }
-    
+
     // Start loading data immediately after auth check
     if (user?.uid) {
       loadEnhancedSchoolLabData()
@@ -259,7 +258,7 @@ export default function EnhancedSchoolLabPage() {
         <div className="flex items-center text-slate-600 dark:text-slate-400">
           <ClockIcon className="h-4 w-4 mr-2" />
           {info.getValue()}
-        </div>
+      </div>
       ),
     }),
     columnHelper.accessor('subject', {
@@ -312,7 +311,7 @@ export default function EnhancedSchoolLabPage() {
             >
               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                 <AcademicCapIcon className="h-6 w-6 text-white" />
-              </div>
+            </div>
               <span className="text-xl font-bold text-slate-900 dark:text-white">FG School Lab</span>
             </motion.div>
 
@@ -459,8 +458,8 @@ export default function EnhancedSchoolLabPage() {
 
         {/* ABMI Classes & Certificates */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="mb-6">
@@ -470,7 +469,7 @@ export default function EnhancedSchoolLabPage() {
             <p className="text-slate-600 dark:text-slate-400">
               Unlock professional certificates and enhance your skills with industry-recognized courses
             </p>
-          </div>
+              </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {abmiCourses.map((course, index) => (
@@ -495,7 +494,7 @@ export default function EnhancedSchoolLabPage() {
                       ) : (
                         <LockClosedIcon className="h-5 w-5 text-slate-400" />
                       )}
-                    </div>
+              </div>
                     <CardTitle className="text-lg">{course.title}</CardTitle>
                     <CardDescription>{course.description}</CardDescription>
                   </CardHeader>
@@ -504,7 +503,7 @@ export default function EnhancedSchoolLabPage() {
                       <div className="flex justify-between text-sm">
                         <span>Instructor: {course.instructor}</span>
                         <span>{course.duration}</span>
-                      </div>
+            </div>
                       <div className="flex justify-between text-sm">
                         <span>Points Required:</span>
                         <span className="font-medium">{course.pointsRequired}</span>
@@ -528,17 +527,17 @@ export default function EnhancedSchoolLabPage() {
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+          </motion.div>
             ))}
           </div>
         </motion.section>
 
         {/* School Achievements with Slider */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-        >
+          >
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               🏆 School Achievements & Competitions
@@ -546,7 +545,7 @@ export default function EnhancedSchoolLabPage() {
             <p className="text-slate-600 dark:text-slate-400">
               Celebrating our excellence in LSS, USS, TIP, Kalolsavam, and more
             </p>
-          </div>
+              </div>
           
           <div className="relative">
             <div className="overflow-hidden rounded-xl">
@@ -560,7 +559,7 @@ export default function EnhancedSchoolLabPage() {
                       <CardContent className="p-0">
                         <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-t-lg flex items-center justify-center">
                           <span className="text-6xl">{achievement.title.split(' ')[0]}</span>
-                        </div>
+              </div>
                         <div className="p-6">
                           <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                             {achievement.title}
@@ -571,13 +570,13 @@ export default function EnhancedSchoolLabPage() {
                           <div className="flex justify-between items-center">
                             <Badge variant="outline">{achievement.category}</Badge>
                             <span className="text-sm text-slate-500">{achievement.date}</span>
-                          </div>
+            </div>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
                 ))}
-              </motion.div>
+          </motion.div>
             </div>
             
             {/* Slider Controls */}
@@ -631,10 +630,10 @@ export default function EnhancedSchoolLabPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {specialEvents.map((event, index) => (
-              <motion.div
+          <motion.div
                 key={event.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
                 whileHover={{ scale: 1.02 }}
               >
@@ -646,7 +645,7 @@ export default function EnhancedSchoolLabPage() {
                          event.type === 'Celebration' ? '🎊' : 
                          event.type === 'Competition' ? '🏆' : '🔬'}
                       </span>
-                    </div>
+              </div>
                     <div className="p-6 space-y-4">
                       <div>
                         <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 mb-2">
@@ -655,13 +654,13 @@ export default function EnhancedSchoolLabPage() {
                         <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
                           {event.description}
                         </p>
-                      </div>
+              </div>
                       
                       <div className="space-y-2">
                         <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                           <CalendarIcon className="h-4 w-4 mr-2" />
                           {event.date} at {event.time}
-                        </div>
+            </div>
                         <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                           <UserGroupIcon className="h-4 w-4 mr-2" />
                           {event.rsvpCount} registered
@@ -683,7 +682,7 @@ export default function EnhancedSchoolLabPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+          </motion.div>
             ))}
           </div>
         </motion.section>
@@ -705,7 +704,7 @@ export default function EnhancedSchoolLabPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {staffMembers.map((staff, index) => (
-              <motion.div
+          <motion.div
                 key={staff.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -761,10 +760,10 @@ export default function EnhancedSchoolLabPage() {
 
         {/* Enhanced Team Competition */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-        >
+          >
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               🏆 Live Team Leaderboard
@@ -772,7 +771,7 @@ export default function EnhancedSchoolLabPage() {
             <p className="text-slate-600 dark:text-slate-400">
               Real-time standings in arts, sports, and Kalolsavam competitions
             </p>
-          </div>
+              </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {teamPoints.map((team, index) => (
@@ -801,7 +800,7 @@ export default function EnhancedSchoolLabPage() {
                     <div className="text-center">
                       <div className="text-3xl font-bold mb-2">{team.points}</div>
                       <div className="text-sm text-slate-500">/ {team.maxPoints} points</div>
-                    </div>
+              </div>
                     
                     <Progress 
                       value={(team.points / team.maxPoints) * 100} 
@@ -812,7 +811,7 @@ export default function EnhancedSchoolLabPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-sm">🎨 Arts</span>
                         <span className="font-medium">{team.arts}</span>
-                      </div>
+            </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">⚽ Sports</span>
                         <span className="font-medium">{team.sports}</span>
@@ -824,9 +823,9 @@ export default function EnhancedSchoolLabPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+          </motion.div>
             ))}
-          </div>
+        </div>
         </motion.section>
 
         {/* Class Schedule Table */}
@@ -919,13 +918,13 @@ export default function EnhancedSchoolLabPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {leaderboard.slice(0, 3).map((leader, index) => (
-                <motion.div
+          <motion.div
                   key={leader.uid}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 * index }}
                   className="flex items-center space-x-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-800"
-                >
+          >
                   <div className="flex-shrink-0">
                     <div className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-white font-bold",
@@ -933,7 +932,7 @@ export default function EnhancedSchoolLabPage() {
                     )}>
                       {index + 1}
                     </div>
-                  </div>
+                    </div>
                   <Avatar>
                     <AvatarImage src={leader.avatar} />
                     <AvatarFallback>{leader.name.charAt(0)}</AvatarFallback>
@@ -945,7 +944,7 @@ export default function EnhancedSchoolLabPage() {
                   <div className="text-right">
                     <div className="font-bold text-blue-600">{leader.totalPoints}</div>
                     <div className="text-xs text-slate-500">points</div>
-                  </div>
+                </div>
                 </motion.div>
               ))}
             </CardContent>
@@ -1016,12 +1015,12 @@ export default function EnhancedSchoolLabPage() {
                     transition={{ delay: 0.7, duration: 1.5, ease: "easeOut" }}
                     className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full"
                   />
-                </div>
-              </motion.div>
+            </div>
+          </motion.div>
 
               {/* Current Stats */}
               <div className="grid grid-cols-3 gap-4 mb-8">
-                <motion.div
+          <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
@@ -1042,16 +1041,16 @@ export default function EnhancedSchoolLabPage() {
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+            transition={{ delay: 0.6 }}
                   className="text-center bg-orange-500/20 rounded-xl p-3"
-                >
+          >
                   <div className="text-2xl font-bold text-orange-400">{bonusPoints?.currentStreak || 1}</div>
                   <div className="text-xs text-slate-400">Day Streak</div>
                 </motion.div>
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-3">
+            <div className="space-y-3">
                 <motion.button
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -1080,8 +1079,8 @@ export default function EnhancedSchoolLabPage() {
                 >
                   Close
                 </motion.button>
-              </div>
-            </motion.div>
+            </div>
+          </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1131,10 +1130,10 @@ export default function EnhancedSchoolLabPage() {
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </motion.button>
-                </div>
-                
+        </div>
+
                 {/* Animated Category Tabs */}
-                <motion.div
+        <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -1177,8 +1176,8 @@ export default function EnhancedSchoolLabPage() {
                   {leaderboard.map((leader, index) => (
                     <motion.div
                       key={leader.uid}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 * index }}
                       whileHover={{ scale: 1.02, x: 10 }}
                       className="flex items-center space-x-4 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all border border-white/10"
@@ -1283,11 +1282,11 @@ export default function EnhancedSchoolLabPage() {
                 </p>
               </div>
               
-              <div className="space-y-4">
+          <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-2">Experience</h3>
                   <p className="text-slate-600 dark:text-slate-400 text-sm">{selectedStaffMember.experience}</p>
-                </div>
+            </div>
                 
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-2">Qualifications</h3>
@@ -1295,7 +1294,7 @@ export default function EnhancedSchoolLabPage() {
                     {selectedStaffMember.qualifications.map((qual, i) => (
                       <Badge key={i} variant="outline">{qual}</Badge>
                     ))}
-                  </div>
+          </div>
                 </div>
                 
                 {selectedStaffMember.specializations && (
@@ -1321,7 +1320,7 @@ export default function EnhancedSchoolLabPage() {
               >
                 Close
               </Button>
-            </motion.div>
+        </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

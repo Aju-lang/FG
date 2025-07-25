@@ -5,6 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,15 +28,17 @@ const app = initializeApp(firebaseConfig);
 let analytics: any = null;
 let auth: any = null;
 let db: any = null;
+let storage: any = null;
 
 // Only initialize client-side services in the browser
 if (typeof window !== 'undefined') {
   analytics = getAnalytics(app);
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = getStorage(app);
 }
 
-export { app, auth, db, analytics };
+export { app, auth, db, storage, analytics };
 
 // Getter functions that ensure client-side only execution
 export const getFirebaseAuth = () => {
@@ -57,4 +60,11 @@ export const getFirebaseApp = () => {
     throw new Error('Firebase App can only be used on the client side')
   }
   return app
+}
+
+export const getFirebaseStorage = () => {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Storage can only be used on the client side')
+  }
+  return storage
 } 
