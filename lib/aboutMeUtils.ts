@@ -182,9 +182,22 @@ const MOCK_USER_CONTRIBUTIONS: UserContribution[] = [
 // API Functions
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   try {
-    const userDoc = await getDoc(doc(db, 'userProfiles', uid))
+    // Check both collections for backward compatibility
+    let userDoc = await getDoc(doc(db, 'aboutMeProfiles', uid))
+    
+    if (!userDoc.exists()) {
+      // Fallback to old collection
+      userDoc = await getDoc(doc(db, 'userProfiles', uid))
+    }
+    
     if (userDoc.exists()) {
-      return { uid, ...userDoc.data() } as UserProfile
+      const data = userDoc.data()
+      return { 
+        uid, 
+        name: data.name || 'Student',
+        email: data.email || 'student@school.edu',
+        ...data 
+      } as UserProfile
     }
     
     // Return mock data for demo with user info
@@ -204,7 +217,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 export async function updateUserProfile(uid: string, profileData: Partial<UserProfile>): Promise<boolean> {
   try {
-    await setDoc(doc(db, 'userProfiles', uid), {
+    await setDoc(doc(db, 'aboutMeProfiles', uid), {
       ...profileData,
       uid,
       updatedAt: new Date().toISOString()
@@ -219,7 +232,14 @@ export async function updateUserProfile(uid: string, profileData: Partial<UserPr
 
 export async function getUserActivity(uid: string): Promise<UserActivity | null> {
   try {
-    const activityDoc = await getDoc(doc(db, 'userActivities', uid))
+    // Check new collection first
+    let activityDoc = await getDoc(doc(db, 'userActivity', uid))
+    
+    if (!activityDoc.exists()) {
+      // Fallback to old collection name
+      activityDoc = await getDoc(doc(db, 'userActivities', uid))
+    }
+    
     if (activityDoc.exists()) {
       return activityDoc.data() as UserActivity
     }
@@ -248,6 +268,14 @@ export async function updateUserActivity(uid: string, activityData: Partial<User
 
 export async function getUserContributions(uid: string): Promise<UserContribution[]> {
   try {
+    // Check new collection structure first
+    const contributionsDoc = await getDoc(doc(db, 'userContributions', uid))
+    if (contributionsDoc.exists()) {
+      const data = contributionsDoc.data()
+      return data.contributions || []
+    }
+    
+    // Fallback to old subcollection structure
     const contributionsRef = collection(db, `userProfiles/${uid}/contributions`)
     const q = query(contributionsRef, orderBy('date', 'desc'))
     const querySnapshot = await getDocs(q)

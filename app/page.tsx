@@ -3,7 +3,20 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
-import { getRedirectPath } from '@/lib/auth'
+
+// Simple redirect function without Firebase dependencies
+const getRedirectPath = (role: string): string => {
+  switch (role) {
+    case 'student':
+      return '/school-lab'
+    case 'controller':
+      return '/dashboard'
+    case 'primary':
+      return '/primary-controller'
+    default:
+      return '/login'
+  }
+}
 
 export default function HomePage() {
   const router = useRouter()

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
-import { signOutUser } from '@/lib/auth'
+// Removed Firebase auth import
 import { toast } from 'react-toastify'
 
 export default function ControlDashboardPage() {
@@ -26,12 +26,22 @@ export default function ControlDashboardPage() {
 
   const handleLogout = async () => {
     try {
-      await signOutUser()
-      toast.success('Logged out successfully')
+      // Clear user from store
+      const { clearUser } = useAuthStore.getState()
+      clearUser()
+      
+      // Clear localStorage
+      localStorage.removeItem('userProfile')
+      localStorage.removeItem('currentStudent')
+      localStorage.removeItem('rememberedEmail')
+      localStorage.removeItem('rememberedUserType')
+      localStorage.removeItem('primaryController')
+      
+      toast.success('Signed out successfully')
       router.replace('/login')
     } catch (error) {
       console.error('Logout error:', error)
-      toast.error('Error logging out')
+      toast.error('Error signing out')
     }
   }
 

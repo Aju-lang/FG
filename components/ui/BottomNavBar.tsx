@@ -1,153 +1,93 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
-  MdSchool, 
-  MdWorkspaces, 
-  MdEmojiEvents, 
-  MdPerson,
-  MdBadge
-} from 'react-icons/md'
-import { cn } from '@/lib/utils'
+  Home, 
+  Trophy, 
+  Award, 
+  Users, 
+  User
+} from 'lucide-react'
 
-interface NavItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  path: string
-  color: string
-}
-
-const navItems: NavItem[] = [
-  {
-    id: 'mentorship',
-    label: 'Mentorship',
-    icon: MdWorkspaces,
-    path: '/mentorship',
-    color: 'text-purple-400'
+const navItems = [
+  { 
+    name: 'Mentorship Lab', 
+    path: '/mentorship', 
+    icon: Users,
+    color: 'text-purple-600'
   },
-  {
-    id: 'certificates',
-    label: 'Certificates',
-    icon: MdBadge,
-    path: '/certificates',
-    color: 'text-green-400'
+  { 
+    name: 'Certificate Lab', 
+    path: '/certificates', 
+    icon: Award,
+    color: 'text-green-600'
   },
-  {
-    id: 'school-lab',
-    label: 'School Lab',
-    icon: MdSchool,
-    path: '/school-lab',
-    color: 'text-blue-400'
+  { 
+    name: 'School Lab', 
+    path: '/school-lab', 
+    icon: Home,
+    color: 'text-blue-600'
   },
-  {
-    id: 'leadership',
-    label: 'Leadership',
-    icon: MdEmojiEvents,
-    path: '/leadership',
-    color: 'text-orange-400'
+  { 
+    name: 'Leadership Lab', 
+    path: '/leadership', 
+    icon: Trophy,
+    color: 'text-orange-600'
   },
-  {
-    id: 'about-me',
-    label: 'About Me',
-    icon: MdPerson,
-    path: '/about-me',
-    color: 'text-pink-400'
+  { 
+    name: 'About Me Lab', 
+    path: '/about-me', 
+    icon: User,
+    color: 'text-pink-600'
   }
 ]
 
 export default function BottomNavBar() {
-  const pathname = usePathname()
   const router = useRouter()
-
-  const handleNavigation = (path: string) => {
-    if (navigator.vibrate) {
-      navigator.vibrate(30)
-    }
-    router.push(path)
-  }
-
-  const isActive = (path: string) => {
-    return pathname === path || (pathname === '/' && path === '/school-lab')
-  }
+  const pathname = usePathname()
 
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4"
-    >
-      {/* Phone-width Navigation Container */}
-      <div className="bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl px-4 py-3 max-w-sm mx-auto">
-        <div className="flex items-center justify-between gap-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const active = isActive(item.path)
-            
-            return (
-              <motion.button
-                key={item.id}
-                onClick={() => handleNavigation(item.path)}
-                className="relative flex flex-col items-center justify-center px-2 py-2 rounded-xl transition-all duration-300 min-w-0 flex-1"
-                whileTap={{ scale: 0.95 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                {/* Active Background */}
-                {active && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/30 rounded-xl border border-blue-500/30"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Glassy Navigation Bar */}
+      <motion.nav
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-slate-200 dark:border-slate-700 shadow-lg"
+      >
+        <div className="max-w-md mx-auto px-4 py-2">
+          {/* Navigation Items */}
+          <div className="flex items-center justify-between">
+            {navItems.map((item, index) => {
+              const isActive = pathname === item.path
+              const Icon = item.icon
 
-                {/* Icon */}
-                <motion.div
-                  animate={{
-                    scale: active ? 1.1 : 1,
-                    y: active ? -1 : 0
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="relative z-10 mb-1"
+              return (
+                <motion.button
+                  key={item.name}
+                  onClick={() => router.push(item.path)}
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-blue-50 dark:bg-blue-900/20' 
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                  }`}
                 >
-                  <Icon 
-                    className={cn(
-                      "w-5 h-5 transition-colors duration-300",
-                      active 
-                        ? item.color
-                        : "text-slate-500"
-                    )}
-                  />
-                </motion.div>
-                
-                {/* Label */}
-                <motion.span
-                  animate={{
-                    opacity: active ? 1 : 0.7,
-                    fontWeight: active ? 600 : 500,
-                    color: active ? 'rgb(255, 255, 255)' : 'rgb(148, 163, 184)'
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="text-xs leading-tight relative z-10 text-center truncate max-w-full"
-                >
-                  {item.label}
-                </motion.span>
-
-                {/* Active Dot */}
-                {active && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full"
-                  />
-                )}
-              </motion.button>
-            )
-          })}
+                  <div className={`p-1.5 rounded-lg ${isActive ? item.color : 'text-slate-500'}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className={`text-xs font-medium mt-1 ${
+                    isActive ? item.color : 'text-slate-600 dark:text-slate-400'
+                  }`}>
+                    {item.name.split(' ')[0]}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.nav>
+    </div>
   )
 } 
